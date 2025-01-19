@@ -1,0 +1,2 @@
+- Get your Twitch API credentials from [Twitch Developer Console](https://dev.twitch.tv/console)
+- Create a `config.json` file with your credentials:

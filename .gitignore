@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+access_token.json
+auto-category.py
+config.json
