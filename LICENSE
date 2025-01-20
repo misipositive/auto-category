@@ -1,0 +1,116 @@
+Personal OBS Use Only License
+Version 2.0
+1. Definitions
+"Software" means the OBS automation script and all associated files.
+"Personal Use" means:
+
+Single natural person
+Non-commercial streaming activity
+Private, individual capacity only
+Revenue below €1000/month from streaming
+Single installation on personal computer
+
+2. Grant of License
+Author grants a limited, non-transferable, non-exclusive license for Personal Use only.
+3. Explicitly Permitted Uses
+3.1. Installation
+
+One installation per natural person
+On personally owned/controlled computer
+For private streaming setup
+
+3.2. Configuration
+
+Modification of configuration files only
+Personal API keys and credentials
+Stream-specific settings
+
+4. Explicitly Prohibited Uses
+4.1. Commercial Activities
+
+Any commercial redistribution
+Professional streaming services
+Business use of any kind
+Integration into commercial products
+Use by legal entities or corporations
+
+4.2. Distribution
+
+No sharing or redistribution
+No public repositories
+No inclusion in software packages
+No transfer of license rights
+
+4.3. Modifications
+
+No core functionality changes
+No derivative works
+No rebranding or repackaging
+No monetization features
+
+5. Automatic Termination
+5.1. Triggers
+
+Any violation of terms
+Attempt to circumvent restrictions
+Legal challenge to license terms
+Commercial use attempt
+
+5.2. Effects
+
+Immediate cessation of rights
+Mandatory deletion of all copies
+Removal of configurations
+Revocation of access tokens
+
+6. Legal Framework
+6.1. Governing Law
+
+German Law (Deutsches Recht)
+§§ 433 ff. BGB applicable
+EU Consumer Protection Laws
+GDPR compliance required
+
+6.3. Severability
+
+If any provision is invalid, others remain
+Invalid terms replaced with valid equivalent
+Core personal use restriction remains binding
+
+7. Warranty and Liability
+7.1. No Warranty
+
+Software provided "AS IS"
+No fitness for purpose guarantee
+No performance guarantee
+
+7.2. Limitation of Liability
+
+No liability for damages
+No responsibility for data loss
+Maximum liability limited to €0
+
+8. Legal Entity Exclusion
+This license explicitly excludes:
+
+Companies of any size
+Corporations
+LLCs
+Partnerships
+Business entities
+Professional streamers
+Streaming organizations
+Multi-channel networks
+
+9. Challenge Provision
+Any attempt to legally challenge these terms:
+
+Automatically terminates license
+Requires immediate deletion
+Incurs obligation to compensate for legal fees
+
+10. Reservation of Rights
+All rights not explicitly granted are reserved.
+Author retains right to modify license terms.
+© 2025 misipositive
+Contact: misipositive+license@gmail.com
