@@ -1,10 +1,12 @@
 ## Instructions
-- Get your Twitch API credentials from [Twitch Developer Console](https://dev.twitch.tv/console)
-- https://dev.twitch.tv/console/apps
+- [Login] To get your Twitch API credentials from [Twitch Developer Console](https://dev.twitch.tv/console)
+- [Register your application](https://dev.twitch.tv/console/apps)
 - Top right Register application
+- OAuth Redirect URLs: http://localhost 
 - client id and secret id at bottom
 
 
+- config.json & auto-category3.py should be in the same folder under `C:\Program Files\obs-studio\data\obs-plugins\frontend-tools\scripts`
 - Create a `config.json` file with your credentials:
 - (`config.json`)This how it should look
 `{
@@ -13,8 +15,6 @@
     "broadcaster_name": ""
 }`
 
-## Prerequisites 
-- config.json & auto-category3.py should be in the same folder under `C:\Program Files\obs-studio\data\obs-plugins\frontend-tools\scripts`
 - Python 3.6+ (installed and configured with OBS)
 - Python libraries: obspython, requests, psutil
 
