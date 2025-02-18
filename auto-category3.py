@@ -126,12 +126,9 @@ def script_log(message):
 
 def login_button_clicked(props, prop):
     global auth_initiated
-    if not auth_initiated:
-        auth_initiated = True
-        threading.Thread(target=start_oauth_server).start()
-        start_auth()
-    else:
-        script_log("Authentication already in progress. Please check your browser.")
+    auth_initiated = False
+    threading.Thread(target=start_oauth_server, daemon=True).start()
+    start_auth()
     return True
 
 def start_auth():
