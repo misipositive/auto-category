@@ -3,3 +3,5 @@ __pycache__/
 access_token.json
 auto-category.py
 config.json
+tokens.json
+auto-category4.py
