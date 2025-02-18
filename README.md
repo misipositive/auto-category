@@ -1,3 +1,4 @@
+# im testing auto-category4.py still
 ## Instructions
 - [Login] To get your Twitch API credentials from [Twitch Developer Console](https://dev.twitch.tv/console)
 - [Register your application](https://dev.twitch.tv/console/apps)
