@@ -1,4 +1,4 @@
-import obspython as obs
+import obspython as obs # type: ignore
 import json
 import os
 import requests
@@ -8,7 +8,7 @@ import socketserver
 import http.server
 import socket
 import time
-import psutil
+import psutil # type: ignore
 
 # Global variables
 client_id = None
