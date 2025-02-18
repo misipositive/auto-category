@@ -21,7 +21,7 @@ server_thread = None
 stop_monitoring = False
 current_category = "Just Chatting"  # Initialize with default category
 
-# Add near the top with other globals
+# Prioritze a category over another, higher number means higher priority.
 process_priorities = {
     "cs2.exe": 90,
     "leagueclient.exe": 90,
@@ -52,7 +52,7 @@ process_priorities = {
 }
 
 
-# Process to category mapping
+# Add more games here (exe file as in taskmanger, game name as in Twitch Categories selection)
 process_categories = {
     "huntgame.exe": "Hunt: Showdown 1896",
     "cs2.exe": "Counter-Strike",
