@@ -1,15 +1,14 @@
-# Auto-Category, OBS script for updating twitch categories
-Updates Twitch.tv category based on running program. 
+# Auto-Category
+Updates Twitch.tv category based on running program.
 if minecraft.exe running -> update twitch category to "Minecraft"
-
 ## Installation & Requirments 
 1. Python version 3.9 or later, configured/loaded with OBS
 2. Python libraries: requests, psutil
-- `pip install requests psutil`
+  `pip install requests psutil`
 3. Place `auto-category4.py` in:
-`C:\Program Files\obs-studio\data\obs-plugins\frontend-tools\scripts`
+  `C:\Program Files\obs-studio\data\obs-plugins\frontend-tools\scripts`
 4. Create a `config.json` file in the same folder with your Twitch API credentials:
-`{"client_id": "YOUR_CLIENT_ID","client_secret": "YOUR_CLIENT_SECRET","broadcaster_name": "YOUR_TWITCH_USERNAME"}`
+  `{"client_id": "YOUR_CLIENT_ID","client_secret": "YOUR_CLIENT_SECRET","broadcaster_name": "YOUR_TWITCH_USERNAME"}`
 
 5. To obtain Twitch API credentials:
 Go to the Twitch Developer Console
