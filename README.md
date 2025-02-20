@@ -1,6 +1,5 @@
 # Auto-Category
 Updates Twitch.tv category based on running program.
-if minecraft.exe running -> update twitch category to "Minecraft"
 ## Installation & Requirments 
 1. Python version 3.9 or later, configured/loaded with OBS
 2. Python libraries: requests, psutil
