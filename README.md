@@ -1,25 +1,35 @@
-# im testing auto-category4.py still
-## Instructions
-- [Login] To get your Twitch API credentials from [Twitch Developer Console](https://dev.twitch.tv/console)
-- [Register your application](https://dev.twitch.tv/console/apps)
-- Top right Register application
-- OAuth Redirect URLs: http://localhost 
-- client id and secret id at bottom
+# Auto-Category, OBS script for updating twitch categories
+Updates Twitch.tv category based on running program. 
+if minecraft.exe running -> update twitch category to "Minecraft"
 
+## Installation & Requirments 
+1. Python version 3.9 or later, configured/loaded with OBS
+2. Python libraries: requests, psutil
+- `pip install requests psutil`
+3. Place `auto-category4.py` in:
+`C:\Program Files\obs-studio\data\obs-plugins\frontend-tools\scripts`
+4. Create a `config.json` file in the same folder with your Twitch API credentials:
+`{"client_id": "YOUR_CLIENT_ID","client_secret": "YOUR_CLIENT_SECRET","broadcaster_name": "YOUR_TWITCH_USERNAME"}`
 
-- config.json & auto-category3.py should be in the same folder under `C:\Program Files\obs-studio\data\obs-plugins\frontend-tools\scripts`
-- Create a `config.json` file with your credentials:
-- (`config.json`)This how it should look
-`{
-    "client_id": "",
-    "client_secret": "",
-    "broadcaster_name": ""
-}`
+5. To obtain Twitch API credentials:
+Go to the Twitch Developer Console
+Register a new application
+Set OAuth Redirect URL to: http://localhost
+Copy the Client ID and Client Secret
 
-- Python 3.6+ (installed and configured with OBS)
-- Python libraries: obspython, requests, psutil
+## Usage
+Launch OBS
+Tools -> Scripts > + Button > select auto-category4.py > Login With Twitch
+Login when prompted (required once per OBS session)
 
-## Note
-- the script oauth needs to be refreshed every 4 hours
-- meaning, click the refresh script, Login Button again, authenticate. 
-now you have 4 more hours of automatic twitch categories
+## Add more games
+Edit these 2 lines in -> auto_category4.py
+`process_categories = {"minecraft.exe": "Minecraft",}`
+`process_priorities = {"minecraft.exe": 90,}`
+
+Example: 
+- `"game or app in lowercase.exe" : "Category like it is from twitch categories"`
+- `"vscode.exe" : "Software and Game Development"`
+
+## Notes
+Login is only needed once per OBS session
