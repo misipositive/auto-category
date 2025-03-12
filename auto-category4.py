@@ -49,12 +49,16 @@ process_priorities = {
     "shotcut.exe": 60,
     "jigsaw.exe": 90,
     "huntgame.exe": 90,
+    "paladins.exe": 90,
+    "BloonsTD6.exe": 90,
     "raft.exe": 90,
 }
 
 
 # Add more games here (exe file as in taskmanger, game name as in Twitch Categories selection)
 process_categories = {
+    "BloonsTD6.exe": "Bloons TD 6",
+    "paladins.exe": "Paladins",
     "huntgame.exe": "Hunt: Showdown 1896",
     "cs2.exe": "Counter-Strike",
     "leagueclient.exe": "League of Legends",
