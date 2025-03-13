@@ -60,7 +60,7 @@ process_categories = {
     "leagueclient.exe": "League of Legends",
     "league of legends.exe": "League of Legends",
     "cursor.exe": "Software and Game Development",
-    "Vscode.exe": "Software and Game Development",
+    "VsCode.exe": "Software and Game Development",
     "code.exe": "Software and Game Development",
     "pubg.exe": "PLAYERUNKNOWN'S BATTLEGROUNDS",
     "rocketleague.exe": "Rocket League",
@@ -315,13 +315,16 @@ def check_processes():
         highest_priority = -1
         selected_category = None
         
+        process_priorities_fold = {k.casefold(): v for k, v in process_priorities.items()}
+        process_categories_fold = {k.casefold(): v for k, v in process_categories.items()}
+        
         for proc in psutil.process_iter(['name']):
             process_name = proc.info['name'].casefold()
-            if process_name in process_categories:
-                priority = process_priorities.get(process_name, 0)
+            if process_name in process_categories_fold:
+                priority = process_priorities_fold.get(process_name, 0)
                 if priority > highest_priority:
                     highest_priority = priority
-                    selected_category = process_categories[process_name]
+                    selected_category = process_categories_fold[process_name]
         
         if selected_category is None:
             return "Just Chatting"  # Explicitly return "Just Chatting" if no match found
