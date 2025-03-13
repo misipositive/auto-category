@@ -9,7 +9,6 @@ import socket
 import time
 import psutil # type: ignore
 
-# Global variables
 client_id = None
 client_secret = None
 access_token = None
@@ -21,7 +20,6 @@ server_thread = None
 stop_monitoring = False
 current_category = "Just Chatting"  # Initialize with default category
 
-# Prioritze a category over another, higher number means higher priority.
 process_priorities = {
     "cs2.exe": 90,
     "leagueclient.exe": 90,
@@ -54,17 +52,15 @@ process_priorities = {
     "raft.exe": 90,
 }
 
-
-# Add more games here (exe file as in taskmanger, game name as in Twitch Categories selection)
 process_categories = {
-    "BloonsTD6.exe": "Bloons TD 6",
+    "bloonstd6.exe": "Bloons TD 6",
     "paladins.exe": "Paladins",
     "huntgame.exe": "Hunt: Showdown 1896",
     "cs2.exe": "Counter-Strike",
     "leagueclient.exe": "League of Legends",
     "league of legends.exe": "League of Legends",
     "cursor.exe": "Software and Game Development",
-    "vscode.exe": "Software and Game Development",
+    "Vscode.exe": "Software and Game Development",
     "code.exe": "Software and Game Development",
     "pubg.exe": "PLAYERUNKNOWN'S BATTLEGROUNDS",
     "rocketleague.exe": "Rocket League",
@@ -292,7 +288,7 @@ def update_twitch_category(category):
             return
             
         # Find the exact match or closest match
-        exact_match = next((cat for cat in categories if cat['name'].lower() == category.lower()), None)
+        exact_match = next((cat for cat in categories if cat['name'].casefold() == category.casefold()), None)
         if exact_match:
             game_id = exact_match['id']
         else:
@@ -320,7 +316,7 @@ def check_processes():
         selected_category = None
         
         for proc in psutil.process_iter(['name']):
-            process_name = proc.info['name'].lower()
+            process_name = proc.info['name'].casefold()
             if process_name in process_categories:
                 priority = process_priorities.get(process_name, 0)
                 if priority > highest_priority:
