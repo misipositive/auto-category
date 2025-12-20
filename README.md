@@ -1,3 +1,7 @@
+### Tried to add: Auto refresh, bigger games database
+Auto refresh updates the twitch api token when it gets too old.
+Bigger games data base using discord https://discord.com/api/v9/applications/detectable thanks to @mme for suggestion
+
 #### Installation 
 1. Python version 3.9 or later, configured/loaded with OBS
 2. required python libraries: requests, psutil
