@@ -8,6 +8,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 import socket
 import time
 import psutil # type: ignore
+import re
 
 client_id = None
 client_secret = None
@@ -113,6 +114,44 @@ process_categories = {
 process_priorities_lower = {k.lower(): v for k, v in process_priorities.items()}
 process_categories_lower = {k.lower(): v for k, v in process_categories.items()}
 
+def strip_edition_suffix(game_name):
+    """
+    Remove common edition suffixes from game names to improve Twitch matching.
+    
+    Examples:
+    - "Fallout 3: Game of the Year Edition" -> "Fallout 3"
+    - "STAR WARS™ Battlefront™ II" -> "STAR WARS™ Battlefront™ II" (no change)
+    - "BioShock™ Remastered" -> "BioShock™"
+    """
+    # List of edition suffixes to remove (case insensitive)
+    # Patterns support both colon (:) and dash (-) separators
+    edition_patterns = [
+        r'[:\-]\s*Game of the Year Edition$',
+        r'[:\-]\s*GOTY Edition$',
+        r'[:\-]\s*GOTY$',
+        r'[:\-]\s*Deluxe Edition$',
+        r'[:\-]\s*Gold Edition$',
+        r'[:\-]\s*Ultimate Edition$',
+        r'[:\-]\s*Complete Edition$',
+        r'[:\-]\s*Definitive Edition$',
+        r'[:\-]\s*Enhanced Edition$',
+        r'[:\-]\s*Special Edition$',
+        r'[:\-]\s*Collector\'s Edition$',
+        r'[:\-]\s*Premium Edition$',
+        r'[:\-]\s*Legendary Edition$',
+        r'[:\-]\s*Digital Deluxe Edition$',
+        r'\s+Remastered$',
+        r'\s+HD$',
+        r'\s+Directors? Cut$',
+        r'[:\-]\s*Prepare To Die Edition$',
+    ]
+    
+    stripped_name = game_name
+    for pattern in edition_patterns:
+        stripped_name = re.sub(pattern, '', stripped_name, flags=re.IGNORECASE)
+    
+    return stripped_name.strip()
+
 def script_description():
     return "Automatically updates Twitch category based on running applications. Uses manual database + Discord detectable games as fallback. Discord database updates on each OBS startup."
 
@@ -199,7 +238,7 @@ def start_oauth_flow():
             test_socket.bind(('localhost', port))
             test_socket.close()
         except OSError:
-            script_log(f"ERROR: Port {port} is already in use. Please close the application using it or change the port in the script (line 194) and Twitch Developer Console.")
+            script_log(f"ERROR: Port {port} is already in use. Please close the application using it or change the port in the script (line 233) and Twitch Developer Console.")
             return
         
         redirect_uri = f"http://localhost:{port}"
@@ -380,7 +419,7 @@ def load_persistent_discord_database():
     db_path = os.path.join(os.path.dirname(__file__), 'discord_games_persistent.json')
     if os.path.exists(db_path):
         try:
-            with open(db_path, 'r') as f:
+            with open(db_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 discord_games_persistent = data.get('games', {})
                 timestamp = data.get('timestamp', 0)
@@ -396,12 +435,12 @@ def save_persistent_discord_database():
     """Save the accumulated Discord games database to disk"""
     db_path = os.path.join(os.path.dirname(__file__), 'discord_games_persistent.json')
     try:
-        with open(db_path, 'w') as f:
+        with open(db_path, 'w', encoding='utf-8') as f:
             json.dump({
                 'games': discord_games_persistent,
                 'timestamp': time.time(),
                 'total_games': len(discord_games_persistent)
-            }, f, indent=2)
+            }, f, indent=2, ensure_ascii=False)
         script_log(f"Saved persistent Discord database: {len(discord_games_persistent)} total games")
     except IOError as e:
         script_log(f"Failed to save persistent Discord database: {e}")
@@ -412,8 +451,9 @@ def update_twitch_category(category):
     if category == current_category:
         return True
     
-    # Skip categories we know don't have exact matches on Twitch
-    if category in failed_categories:
+    # Check if category or its stripped version already failed
+    stripped_category = strip_edition_suffix(category)
+    if category in failed_categories and stripped_category in failed_categories:
         return False
         
     if not access_token:
@@ -471,6 +511,7 @@ def update_twitch_category(category):
             
         broadcaster_id = user_data[0]['id']
         
+        # First try: exact match with full name
         category_response = requests.get(
             f'https://api.twitch.tv/helix/search/categories?query={requests.utils.quote(category)}',
             headers=headers,
@@ -479,19 +520,44 @@ def update_twitch_category(category):
         category_response.raise_for_status()
         categories = category_response.json().get('data', [])
         
-        if not categories:
-            script_log(f"Category not found on Twitch: {category}")
-            return False
-            
-        # Only accept exact matches (case-insensitive)
+        # Try exact match first
         exact_match = next((cat for cat in categories if cat['name'].lower() == category.lower()), None)
+        matched_using_stripped = False
+        
+        # If no exact match found, try with stripped edition suffix
         if not exact_match:
-            script_log(f"No exact match for '{category}' on Twitch. Skipping update to avoid wrong category.")
-            failed_categories.add(category)  # Remember this failed
+            stripped_category = strip_edition_suffix(category)
+            
+            # Only retry if the stripped name is different
+            if stripped_category.lower() != category.lower():
+                script_log(f"No exact match for '{category}', trying stripped version: '{stripped_category}'")
+                
+                category_response = requests.get(
+                    f'https://api.twitch.tv/helix/search/categories?query={requests.utils.quote(stripped_category)}',
+                    headers=headers,
+                    timeout=15
+                )
+                category_response.raise_for_status()
+                categories = category_response.json().get('data', [])
+                
+                exact_match = next((cat for cat in categories if cat['name'].lower() == stripped_category.lower()), None)
+                if exact_match:
+                    matched_using_stripped = True
+                    # Remove from failed cache if we found it with stripping
+                    failed_categories.discard(category)
+        
+        if not exact_match:
+            script_log(f"No match found on Twitch for '{category}' (tried stripped version too). Skipping update.")
+            failed_categories.add(category)
+            if stripped_category.lower() != category.lower():
+                failed_categories.add(stripped_category)
             return False
             
         game_id = exact_match['id']
         actual_category = exact_match['name']
+        
+        if matched_using_stripped:
+            script_log(f"Matched '{category}' using stripped name -> '{actual_category}'")
         
         update_response = requests.patch(
             f'https://api.twitch.tv/helix/channels?broadcaster_id={broadcaster_id}',
