@@ -9,7 +9,6 @@ import socket
 import time
 import psutil # type: ignore
 import re
-import unicodedata
 
 client_id = None
 client_secret = None
@@ -153,32 +152,6 @@ def strip_edition_suffix(game_name):
     
     return stripped_name.strip()
 
-
-## FIND BETTER DATABASE THAT MORE CLOESLY MATCHES WITH TWITCH CATEGORIES
-def normalize_for_twitch(game_name):
-    """
-    Normalize game name for Twitch search by converting Unicode to ASCII.
-    Twitch categories use plain ASCII (no special characters like ™, é, etc.)
-    while Discord shows full Unicode names.
-    
-    Examples:
-    - "STAR WARS™ Battlefront™" -> "STAR WARS Battlefront"
-    - "Pokémon" -> "Pokemon"
-    - "日本事故物件監視協会" -> stays as-is (no direct transliteration)
-    """
-    # Decompose Unicode characters and remove combining marks
-    # This converts é -> e, ñ -> n, etc.
-    normalized = unicodedata.normalize('NFKD', game_name)
-    ascii_name = normalized.encode('ascii', 'ignore').decode('ascii')
-    
-    # Remove trademark and other symbols that got stripped
-    ascii_name = ascii_name.replace('TM', '').replace('(R)', '').replace('(C)', '')
-    
-    # Clean up extra spaces
-    ascii_name = ' '.join(ascii_name.split())
-    
-    return ascii_name.strip()
-
 def script_description():
     return "Automatically updates Twitch category based on running applications. Uses manual database + Discord detectable games as fallback. Discord database updates on each OBS startup."
 
@@ -265,7 +238,7 @@ def start_oauth_flow():
             test_socket.bind(('localhost', port))
             test_socket.close()
         except OSError:
-            script_log(f"ERROR: Port {port} is already in use. Please close the application using it or change the port in the script (line 194) and Twitch Developer Console.")
+            script_log(f"ERROR: Port {port} is already in use. Please close the application using it or change the port in the script (line 233) and Twitch Developer Console.")
             return
         
         redirect_uri = f"http://localhost:{port}"
@@ -478,12 +451,9 @@ def update_twitch_category(category):
     if category == current_category:
         return True
     
-    # Normalize the category name
-    normalized_category = normalize_for_twitch(category)
-    
-    # Check if normalized category or its stripped version already failed
-    stripped_category = strip_edition_suffix(normalized_category)
-    if normalized_category in failed_categories and stripped_category in failed_categories:
+    # Check if category or its stripped version already failed
+    stripped_category = strip_edition_suffix(category)
+    if category in failed_categories and stripped_category in failed_categories:
         return False
         
     if not access_token:
@@ -541,35 +511,26 @@ def update_twitch_category(category):
             
         broadcaster_id = user_data[0]['id']
         
-        # Normalize the category name for Twitch (convert Unicode to ASCII)
-        normalized_category = normalize_for_twitch(category)
-        
-        # Multi-stage matching strategy:
-        # 1. Try normalized name first (most common case)
-        # 2. If no match, try stripped edition suffix
-        # 3. If still no match, fail
-        
-        script_log(f"Searching Twitch for: '{normalized_category}' (normalized from '{category}')")
-        
+        # First try: exact match with full name
         category_response = requests.get(
-            f'https://api.twitch.tv/helix/search/categories?query={requests.utils.quote(normalized_category)}',
+            f'https://api.twitch.tv/helix/search/categories?query={requests.utils.quote(category)}',
             headers=headers,
             timeout=15
         )
         category_response.raise_for_status()
         categories = category_response.json().get('data', [])
         
-        # Try exact match with normalized name
-        exact_match = next((cat for cat in categories if cat['name'].lower() == normalized_category.lower()), None)
+        # Try exact match first
+        exact_match = next((cat for cat in categories if cat['name'].lower() == category.lower()), None)
         matched_using_stripped = False
         
         # If no exact match found, try with stripped edition suffix
         if not exact_match:
-            stripped_category = strip_edition_suffix(normalized_category)
+            stripped_category = strip_edition_suffix(category)
             
             # Only retry if the stripped name is different
-            if stripped_category.lower() != normalized_category.lower():
-                script_log(f"No exact match for '{normalized_category}', trying stripped version: '{stripped_category}'")
+            if stripped_category.lower() != category.lower():
+                script_log(f"No exact match for '{category}', trying stripped version: '{stripped_category}'")
                 
                 category_response = requests.get(
                     f'https://api.twitch.tv/helix/search/categories?query={requests.utils.quote(stripped_category)}',
@@ -583,12 +544,12 @@ def update_twitch_category(category):
                 if exact_match:
                     matched_using_stripped = True
                     # Remove from failed cache if we found it with stripping
-                    failed_categories.discard(normalized_category)
+                    failed_categories.discard(category)
         
         if not exact_match:
-            script_log(f"No match found on Twitch for '{normalized_category}' (normalized from '{category}'). Skipping update.")
-            failed_categories.add(normalized_category)
-            if stripped_category.lower() != normalized_category.lower():
+            script_log(f"No match found on Twitch for '{category}' (tried stripped version too). Skipping update.")
+            failed_categories.add(category)
+            if stripped_category.lower() != category.lower():
                 failed_categories.add(stripped_category)
             return False
             
