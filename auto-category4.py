@@ -192,6 +192,16 @@ def start_oauth_flow():
     
     try:
         port = 1111  # Fixed port for OAuth redirect URL
+        
+        # Check if port is available
+        try:
+            test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            test_socket.bind(('localhost', port))
+            test_socket.close()
+        except OSError:
+            script_log(f"ERROR: Port {port} is already in use. Please close the application using it or change the port in the script (line 202) and Twitch Developer Console.")
+            return
+        
         redirect_uri = f"http://localhost:{port}"
         
         class OAuthHandler(BaseHTTPRequestHandler):
