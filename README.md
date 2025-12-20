@@ -1,4 +1,4 @@
-# update your dev.twitch app too `http:localhost:1111` if you're gonna use this version
+# update your dev.twitch app too `http://localhost:1111` if you're gonna use this version
 
 #### Updates Tried to add: **Auto refresh**, **bigger games database**
 - Auto refresh updates the twitch api token when it gets too old.
