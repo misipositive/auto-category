@@ -41,6 +41,7 @@ process_blacklist = {
     "epicgameslauncher.exe",
     "easyanticheat.exe",
     "battleye.exe",
+    "launcher.exe",
 }
 
 # Manual overrides - highest priority (50-90)

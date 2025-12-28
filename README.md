@@ -1,6 +1,6 @@
 # update your dev.twitch app too `http://localhost:1111` if you're gonna use this version
 
-#### Updates Tried to add: **Auto refresh**, **bigger games database**
+#### Updates & Tried to add: **Auto refresh**, **bigger games database**
 - Auto refresh updates the twitch api token when it gets too old.
 - Bigger games database: Thanks to ***@mee*** from Obs-Forums
 
@@ -21,7 +21,7 @@
 - **Category**: Application Integration
 - Copy Client ID & new Client Secret: Paste in `config.json` we created on step 4.
 
-**note**: the port `1111` must match in both Twitch App and the script (line 194). If changing it: Use a port number above 1024
+**note**: the port `1111` must match in both Twitch App and the script (line 234). If changing it: Use a port number above 1024
 
 #### Using
 - Launch OBS
